@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioConverter 音檔轉檔與壓縮大師 - 視覺化操作手冊 (大圖好讀版)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <!-- Mermaid.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #064e3b;
+            --primary-light: #ecfdf5;
+            --primary-border: #6ee7b7;
+            
+            --secondary: #0284c7;
+            --secondary-light: #f0f9ff;
+            --secondary-border: #7dd3fc;
+            
+            --bg-body: #f4f9f6;
+            --bg-card: #ffffff;
+            --border-color: #d1fae5;
+            
+            --text-main: #064e3b;
+            --text-body: #132e22;
+            --text-muted: #375347;
+            
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            
+            --shadow-card: 0 12px 32px -4px rgba(5, 150, 105, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-btn: 0 6px 18px rgba(5, 150, 105, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            line-height: 1.65;
+            padding-bottom: 6rem;
+        }
+
+        /* 頂部導航列 */
+        .header-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1.1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #059669, #0284c7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+        .btn-repo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            border: 2px solid var(--primary-border);
+            color: var(--primary);
+            padding: 0.55rem 1.3rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+        .btn-repo:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        /* Hero 標題區 */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #064e3b;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.6rem;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* 大圖卡片 (Giant UML Card) */
+        .giant-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            margin-bottom: 3.5rem;
+            box-shadow: var(--shadow-card);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #edf7f2;
+            padding-bottom: 1.2rem;
+        }
+        .card-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #064e3b;
+        }
+        .card-badge {
+            background: #ecfdf5;
+            color: #047857;
+            border: 2px solid #a7f3d0;
+            padding: 0.4rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        /* Mermaid 渲染大容器 */
+        .diagram-wrapper {
+            background: #fafdfc;
+            border: 2px solid #e1f5ec;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 10px rgba(5, 150, 105, 0.03);
+        }
+        
+        /* 放大 Mermaid 內部 SVG 尺寸與字體 */
+        .mermaid {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .mermaid svg {
+            min-width: 780px !important;
+            max-width: 1050px !important;
+            height: auto !important;
+            font-size: 19px !important;
+        }
+
+        /* 大步驟橫條 (4 Steps) */
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3.5rem;
+        }
+        .step-tile {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+            transition: all 0.25s;
+        }
+        .step-tile:hover {
+            transform: translateY(-4px);
+            border-color: #34d399;
+            box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.18);
+        }
+        .step-num-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 900;
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            margin-bottom: 1rem;
+        }
+        .step-icon-large {
+            font-size: 3rem;
+            margin-bottom: 0.6rem;
+            line-height: 1;
+        }
+        .step-tile-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+        .step-tile-desc {
+            font-size: 1.02rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* 雙欄參數大卡片 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .info-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+        }
+        .info-card h4 {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #065f46;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #edf7f2;
+            padding-bottom: 0.8rem;
+        }
+        .row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 0;
+            border-bottom: 1px dashed #d1fae5;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+        .row-item:last-child {
+            border-bottom: none;
+        }
+        .tag-pill {
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tag-green { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .tag-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+        .tag-amber { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+        /* 頁尾 */
+        footer {
+            text-align: center;
+            color: #527566;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 4rem;
+        }
+        footer a {
+            color: #059669;
+            text-decoration: none;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部導覽列 -->
+    <header class="header-bar">
+        <a href="#" class="brand">
+            <div class="brand-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            </div>
+            <span>AudioConverter 操作手冊</span>
+        </a>
+        <a href="https://github.com/HCL0831/AudioConverter" target="_blank" class="btn-repo">
+            🔗 前往 GitHub 專案庫
+        </a>
+    </header>
+
+    <div class="container">
+        
+        <div class="hero">
+            <h1>🌿 音檔轉檔與壓縮大師</h1>
+            <p>清晰大圖 ‧ UML 視覺化操作指引 ‧ <span style="color: #059669; font-weight: 800;">Developed by HCL</span></p>
+        </div>
+
+        <!-- 4 步驟大橫條 -->
+        <div class="step-grid">
+            <div class="step-tile">
+                <span class="step-num-badge">STEP 1</span>
+                <div class="step-icon-large">🚀</div>
+                <div class="step-tile-title">雙擊啟動</div>
+                <div class="step-tile-desc">開啟 <code>音檔轉檔與壓縮大師.exe</code><br/>(免安裝 Python / 開箱即用)</div>
+            </div>
+            <div class="step-tile">
+                <span class="step-num-badge">STEP 2</span>
+                <div class="step-icon-large">📂</div>
+                <div class="step-tile-title">拖入資料夾</div>
+                <div class="step-tile-desc">直接將影音資料夾<br/>拖曳進上方文字框中</div>
+            </div>
+            <div class="step-tile">
+                <span class="step-num-badge">STEP 3</span>
+                <div class="step-icon-large">⚙️</div>
+                <div class="step-tile-title">選擇模式</div>
+                <div class="step-tile-desc">點選 壓縮 / 轉檔 / 分割<br/>並設定音質位元率</div>
+            </div>
+            <div class="step-tile">
+                <span class="step-num-badge">STEP 4</span>
+                <div class="step-icon-large">🎉</div>
+                <div class="step-tile-title">一鍵完成</div>
+                <div class="step-tile-desc">點擊【開始批次處理】<br/>自動存於各資料夾 <code>output/</code></div>
+            </div>
+        </div>
+
+        <!-- UML 圖 1：核心操作流程圖 (大圖加大字) -->
+        <div class="giant-card">
+            <div class="card-header">
+                <h3 class="card-title">📌 【圖 1】全功能操作流程與決策圖</h3>
+                <span class="card-badge">Core Activity Diagram</span>
+            </div>
+            <div class="diagram-wrapper">
+                <pre class="mermaid">
+flowchart TD
+    %% 節點加大加粗樣式
+    classDef stepStart fill:#047857,stroke:#064e3b,stroke-width:3px,color:#ffffff,font-size:20px,font-weight:900;
+    classDef stepAction fill:#e0f2fe,stroke:#0284c7,stroke-width:3px,color:#0369a1,font-size:19px,font-weight:bold;
+    Start(["🚀 1. 開啟 音檔轉檔與壓縮大師.exe"]):::stepStart --> Agreement{"⚖️ 2. 閱讀並勾選同意免責聲明"}:::stepChoice
+    Agreement -->|"❌ 不同意"| ExitApp(["🚪 退出軟體並關閉"]):::stepEnd
+    Agreement -->|"✅ 同意並接受"| Drag["📂 3. 進入主畫面，拖曳資料夾至來源清單"]:::stepAction
+    
+    Drag --> Choice{"⚙️ 4. 請選擇欲執行的功能"}:::stepChoice
+    
+    Choice -->|"想節省空間 / 降低大小"| ModeA["🗜️ 模式 A：壓縮音檔<br/>(設定位元率 64k ~ 320k)"]:::stepAction
+    Choice -->|"想從影片抽取純聲音"| ModeB["🎬 模式 B：影片轉音檔<br/>(MP4/MKV 轉 MP3/WAV)"]:::stepAction
+    Choice -->|"檔案過大無法上傳 AI"| ModeC["✂️ 模式 C：依大小分割<br/>(設定 MB 上限，如 190MB)"]:::stepAction
+
+    ModeA --> Run["▶️ 5. 點擊【開始批次處理】按鈕"]:::stepStart
+    ModeB --> Run
+    ModeC --> Run
+
+    Run --> Process["⚡ FFmpeg 背景多執行緒自動轉檔 (不卡視窗)"]:::stepAction
+    Process --> Output(["🎉 完成！檔案自動存放在各來源資料夾內的 output/ 子目錄"]):::stepEnd
+                </pre>
+            </div>
+        </div>
+
+        <!-- UML 圖 2：AI 語音轉錄平台分割決策圖 -->
+        <div class="giant-card">
+            <div class="card-header">
+                <h3 class="card-title">📌 【圖 2】AI 語音轉錄與上傳限制分割速查圖</h3>
+                <span class="card-badge">AI Whisper & Cloud Limit Flow</span>
+            </div>
+            <div class="diagram-wrapper">
+                <pre class="mermaid">
+flowchart TD
+    classDef bigFile fill:#f0fdf4,stroke:#059669,stroke-width:3px,color:#064e3b,font-size:20px,font-weight:900;
+    classDef qTarget fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#78350f,font-size:20px,font-weight:900;
+    classDef paramSet fill:#e0f2fe,stroke:#0284c7,stroke-width:3px,color:#0369a1,font-size:19px,font-weight:bold;
+    classDef resultBox fill:#ecfdf5,stroke:#059669,stroke-width:3px,color:#064e3b,font-size:19px,font-weight:bold;
+
+    BigAudio["🎙️ 大型長篇錄音檔 (幾百 MB / 數小時演講)"]:::bigFile --> Target{"您的使用目的？"}:::qTarget
+
+    Target -->|"OpenAI Whisper API (單檔限 25MB)"| P1["設定分割大小：23 MB<br/>(預留 2MB 安全緩衝)"]:::paramSet
+    Target -->|"NotebookLM / 雲端平台 (單檔限 200MB)"| P2["設定分割大小：190 MB<br/>(超長錄音自動切片)"]:::paramSet
+    Target -->|"LINE / 通訊軟體傳送 (單檔限 100MB)"| P3["設定分割大小：95 MB<br/>(免被通訊軟體壓縮音質)"]:::paramSet
+
+    P1 --> R1["產出：檔名_part000.mp3、part001.mp3...<br/>👉 直接批次送入 Whisper 轉文字"]:::resultBox
+    P2 --> R2["產出：安全長段落音檔，順利上傳分析"]:::resultBox
+    P3 --> R3["產出：高音質快速傳送好友"]:::resultBox
+                </pre>
+            </div>
+
+            <!-- 兩大速查卡片 -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🎚️ 音質位元率 (Bitrate) 速查推薦</h4>
+                    <div class="row-item">
+                        <span>會議記錄 / 純人聲語音</span>
+                        <span class="tag-pill tag-amber">64 kbps (0.5 MB/分)</span>
+                    </div>
+                    <div class="row-item">
+                        <span>Podcast / 線上教學課程</span>
+                        <span class="tag-pill tag-green">128 kbps (1.0 MB/分)</span>
+                    </div>
+                    <div class="row-item">
+                        <span>流行音樂 / 影片配樂</span>
+                        <span class="tag-pill tag-blue">192 kbps (1.4 MB/分)</span>
+                    </div>
+                    <div class="row-item">
+                        <span>發燒音響 / 專業母帶收藏</span>
+                        <span class="tag-pill tag-green">320 kbps (2.4 MB/分)</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4>💡 常見問題快速秒解</h4>
+                    <div class="row-item">
+                        <span>完全免裝 Python?</span>
+                        <span class="tag-pill tag-green">雙擊 .exe 直接開</span>
+                    </div>
+                    <div class="row-item">
+                        <span>點擊 .exe 需等幾秒?</span>
+                        <span class="tag-pill tag-blue">自解壓+安全掃描，移至桌面更快</span>
+                    </div>
+                    <div class="row-item">
+                        <span>支援子資料夾遞迴嗎?</span>
+                        <span class="tag-pill tag-green">預設自動遞迴掃描所有子目錄</span>
+                    </div>
+                    <div class="row-item">
+                        <span>拖曳無反應?</span>
+                        <span class="tag-pill tag-amber">請勿使用「管理員身分」啟動</span>
+                    </div>
+                    <div class="row-item">
+                        <span>產出檔案在哪裡?</span>
+                        <span class="tag-pill tag-blue">各來源資料夾的 output/</span>
+                    </div>
+                    <div class="row-item">
+                        <span>處理大檔案會當機嗎?</span>
+                        <span class="tag-pill tag-green">後台多執行緒，畫面不卡頓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 免責聲明卡片 -->
+        <div style="background: #fefce8; border: 2px solid #fef08a; border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-top: 2.5rem; color: #713f12;">
+            <h4 style="font-size: 1.2rem; font-weight: 900; color: #854d0e; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+                ⚖️ 免費軟體使用與免責聲明 (Disclaimer)
+            </h4>
+            <p style="font-size: 0.95rem; line-height: 1.6; font-weight: 600;">
+                本軟體由作者 <b>HCL</b> 免費提供（依現狀 AS-IS 交付）。作者不對因使用本工具引發之任何資料遺失、原始檔損壞或衍生損害承擔法律責任。<b>使用者在轉檔與分割前請務必自行備份重要影音原始檔</b>，並確保處理之影音內容符合著作權法律規範。
+            </p>
+        </div>
+
+    </div>
+
+    <!-- 頁尾 -->
+    <footer>
+        <p>🌿 <b>AudioConverter 音檔轉檔與壓縮大師</b> ‧ 由 <b>HCL</b> 獨立開發與維護</p>
+        <p style="margin-top: 6px;">GitHub 開源網址：<a href="https://github.com/HCL0831/AudioConverter" target="_blank">https://github.com/HCL0831/AudioConverter</a> ‧ Copyright © 2026 HCL</p>
+    </footer>
+
+    <script>
+        // 初始化 Mermaid 並放大字體與節點間距
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#ecfdf5',
+                primaryTextColor: '#064e3b',
+                primaryBorderColor: '#059669',
+                lineColor: '#047857',
+                secondaryColor: '#f0f9ff',
+                tertiaryColor: '#ffffff',
+                fontSize: '20px',
+                fontFamily: 'Plus Jakarta Sans, Noto Sans TC, sans-serif'
+            },
+            flowchart: {
+                nodeSpacing: 55,
+                rankSpacing: 65,
+                curve: 'basis',
+                useMaxWidth: false
+            }
+        });
+    </script>
+</body>
+</html>
